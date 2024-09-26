@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<style>
+    body {
+        background-color: #aaf8da;
+        font-family: Arial, sans-serif;
+        padding: 100px;
+    }
+</style>
+
+<body>
+    <section layout:fragment = "content"></section>
+    <h1>Contact</h1>
+
+    Enter your name: <input type="text" id = "input01">
+    <button onclick="greeting()">Submit</button>
+
+    <div id = "print"></div>
+</body>
+
+<script>
+    var greeting = function () {
+        var name = document.getElementById("input01").value;
+        document.getElementById("print").innerHTML = "Hello " + name + "!";
+    }
+</script>
+
+</html>
