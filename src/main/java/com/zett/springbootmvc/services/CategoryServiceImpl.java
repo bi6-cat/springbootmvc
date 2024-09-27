@@ -99,8 +99,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(String id) {
-        var category = categoryRepository.findById(UUID.fromString(id)).orElse(null);
+    public void delete(UUID id) {
+        var category = categoryRepository.findById(id).orElse(null);
         if(category == null){
             throw new IllegalArgumentException("Category not found");
         }
