@@ -10,5 +10,5 @@ import com.zett.springbootmvc.entities.Category;
 //Register this interface as a bean in the Spring context
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, UUID>{
-
+    Category findByName(String name);
 }
