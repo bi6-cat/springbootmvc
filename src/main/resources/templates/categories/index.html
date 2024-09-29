@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <section class="manager" layout:fragment="content">
+        <div class="card border border-slate-300 rounded-md">
+            <div class="card-header p-3">
+                <h1>Category Management</h1>
+            </div>
+
+            <div>
+                <div class="flex justify-end">
+                    <a href="/categories/create" class="btn btn-primary">Add Category</a>
+                </div>
+
+                <table class="table-auto w-full"> 
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2">ID</th>
+                            <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Description</th>
+                            <th class="px-4 py-2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="category : ${categoriesDTO}">
+                            <td class="border px-4 py-2" th:text="${category.id}"></td>
+                            <td class="border px-4 py-2" th:text="${category.name}"></td>
+                            <td class="border px-4 py-2" th:text="${category.description}"></td>
+                            <td class="border px-4 py-2">
+                                <a href="/categories/edit/{id}" class="btn btn-primary">Edit</a>
+                                <a href="/categories/delete/{id}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div> 
+
+    </section>
+</body>
+</html>
