@@ -14,9 +14,10 @@ import lombok.*;
 public class CategoryDTO {
     private UUID id;
 
-    @NotNull
+    @NotNull(message = "Name is required")
+    @Length(min = 3, max = 100, message =  "Name must be between 3 and 100 characters")
     private String name;
     
-    @Length(max = 1000)
+    @Length(max = 1000, message = "Description must be less than 1000 characters")
     private String description;
 }
