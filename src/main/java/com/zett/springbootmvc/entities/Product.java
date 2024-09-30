@@ -24,4 +24,11 @@ public class Product {
 
     @Column(nullable = false)
     private double price;
+
+    @Column(nullable = false)
+    private int stock;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 }

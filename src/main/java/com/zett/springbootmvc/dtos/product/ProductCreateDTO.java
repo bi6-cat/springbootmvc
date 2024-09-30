@@ -5,8 +5,6 @@ import java.util.UUID;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
-import com.zett.springbootmvc.dtos.category.CategoryDTO;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -14,8 +12,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDTO {
-    private UUID id;
+public class ProductCreateDTO {
 
     @NotNull(message = "Name is required")
     @Length(min = 3, max = 100, message =  "Name must be between 3 and 100 characters")
@@ -33,6 +30,4 @@ public class ProductDTO {
     private int stock;
 
     private UUID categoryId;
-
-    private CategoryDTO category;
 }

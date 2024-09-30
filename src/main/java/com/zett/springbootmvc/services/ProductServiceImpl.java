@@ -3,9 +3,15 @@ package com.zett.springbootmvc.services;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.zett.springbootmvc.dtos.category.CategoryDTO;
+import com.zett.springbootmvc.dtos.product.ProductCreateDTO;
 import com.zett.springbootmvc.dtos.product.ProductDTO;
+import com.zett.springbootmvc.entities.Category;
 import com.zett.springbootmvc.entities.Product;
 import com.zett.springbootmvc.repositories.ProductRepository;
 
@@ -27,6 +33,20 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setName(product.getName());
             productDTO.setDescription(product.getDescription());
             productDTO.setPrice(product.getPrice());
+            productDTO.setStock(product.getStock());
+
+            if (product.getCategory() != null) {
+                productDTO.setCategoryId(product.getCategory().getId());
+
+                // Convert category to categoryDTO
+                var categoryDTO = new CategoryDTO();
+                categoryDTO.setId(product.getCategory().getId());
+                categoryDTO.setName(product.getCategory().getName());
+                categoryDTO.setDescription(product.getCategory().getDescription());
+
+                // Set categoryDTO to productDTO
+                productDTO.setCategory(categoryDTO);
+            }
             return productDTO;
         }).toList();
 
@@ -37,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO findById(UUID id) {
         var product = productRepository.findById(id).orElse(null);
 
-        if(product == null){
+        if (product == null) {
             return null;
         }
 
@@ -46,51 +66,112 @@ public class ProductServiceImpl implements ProductService {
         productDTO.setName(product.getName());
         productDTO.setDescription(product.getDescription());
         productDTO.setPrice(product.getPrice());
-        
+        productDTO.setStock(product.getStock());
+
+        if (product.getCategory() != null) {
+            productDTO.setCategoryId(product.getCategory().getId());
+
+            // Convert category to categoryDTO
+            var categoryDTO = new CategoryDTO();
+            categoryDTO.setId(product.getCategory().getId());
+            categoryDTO.setName(product.getCategory().getName());
+            categoryDTO.setDescription(product.getCategory().getDescription());
+
+            // Set categoryDTO to productDTO
+            productDTO.setCategory(categoryDTO);
+        }
+
         return productDTO;
     }
 
     @Override
-    public ProductDTO create(ProductDTO productDTO) {
-        if(productDTO == null){
-            throw new IllegalArgumentException("Required productDTO");
+    public ProductDTO create(ProductCreateDTO productCreateDTO) {
+        if (productCreateDTO == null) {
+            throw new IllegalArgumentException("Required product");
         }
 
-        var existingProduct = productRepository.findByName(productDTO.getName());
-        if(existingProduct != null){
+        var existingProduct = productRepository.findByName(productCreateDTO.getName());
+        if (existingProduct != null) {
             throw new IllegalArgumentException("Product already exists");
         }
 
         var product = new Product();
-        product.setName(productDTO.getName());
-        product.setDescription(productDTO.getDescription());
-        product.setPrice(productDTO.getPrice());
+        product.setName(productCreateDTO.getName());
+        product.setDescription(productCreateDTO.getDescription());
+        product.setPrice(productCreateDTO.getPrice());
+        product.setStock(productCreateDTO.getStock());
+
+        if (productCreateDTO.getCategoryId() != null) {
+            // Find category by id
+            var category = new Category();
+            // Set category to product
+            category.setId(productCreateDTO.getCategoryId());
+            // Set category to product
+            product.setCategory(category);
+        }
 
         productRepository.save(product);
 
-        productDTO.setId(product.getId());
+        var newProductDTO = new ProductDTO();
+        newProductDTO.setId(product.getId());
+        newProductDTO.setName(product.getName());
+        newProductDTO.setDescription(product.getDescription());
+        newProductDTO.setPrice(product.getPrice());
+        newProductDTO.setStock(product.getStock());
 
-        return productDTO;
+        if (product.getCategory() != null) {
+            newProductDTO.setCategoryId(product.getCategory().getId());
+        }
+
+        return newProductDTO;
     }
 
     @Override
     public ProductDTO update(UUID id, ProductDTO productDTO) {
-        var product = productRepository.findById(id).orElse(null);
-
-        if(product == null){
-            return null;
+        if (productDTO == null) {
+            throw new IllegalArgumentException("ProductDTO is required");
         }
 
+        // Find product by id - Managed
+        var product = productRepository.findById(id).orElse(null);
+
+        if (product == null) {
+            throw new IllegalArgumentException("Product not found");
+        }
+
+        // Update product
         product.setName(productDTO.getName());
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
+        product.setStock(productDTO.getStock());
 
-        productRepository.save(product);
+        // Kiem tra xem category co duoc select hay khong
+        // Neu co thi product co category va can set category cho product do de update
+        if (productDTO.getCategoryId() != null) {
+            var category = new Category();
+            category.setId(productDTO.getCategoryId());
+            product.setCategory(category);
+        }
 
-        productDTO.setId(product.getId());
+        // Save product => update
+        product = productRepository.save(product);
 
-        return productDTO;
+        // Convert Product to ProductDTO
+        var updatedProductDTO = new ProductDTO();
+        updatedProductDTO.setId(product.getId());
+        updatedProductDTO.setName(product.getName());
+        updatedProductDTO.setDescription(product.getDescription());
+        updatedProductDTO.setPrice(product.getPrice());
+        updatedProductDTO.setStock(product.getStock());
+
+        // Neu product co category thi set category id cho productDTO
+        if (product.getCategory() != null) {
+            updatedProductDTO.setCategoryId(product.getCategory().getId());
+        }
+
+        return updatedProductDTO;
     }
+
 
     @Override
     public void delete(UUID id) {
@@ -99,6 +180,85 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Product not found");
         }
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ProductDTO> search(String keyword) {
+        if (keyword == null) {
+            return findAll();
+        }
+
+        var categories = productRepository.findByNameContainingIgnoreCase(keyword);
+
+        var productDTOs = categories.stream().map(product -> {
+            var productDTO = new ProductDTO();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setStock(product.getStock());
+
+            if (product.getCategory() != null) {
+                productDTO.setCategoryId(product.getCategory().getId());
+
+                // Convert category to categoryDTO
+                var categoryDTO = new CategoryDTO();
+                categoryDTO.setId(product.getCategory().getId());
+                categoryDTO.setName(product.getCategory().getName());
+                categoryDTO.setDescription(product.getCategory().getDescription());
+
+                // Set categoryDTO to productDTO
+                productDTO.setCategory(categoryDTO);
+            }
+
+            return productDTO;
+        }).toList();
+
+        return productDTOs;
+    }
+
+
+    @Override
+    public Page<ProductDTO> search(String keyword, Pageable pageable) {
+        Specification<Product> specification = (root, query, criteriaBuilder) -> {
+            if (keyword == null) {
+                return null;
+            }
+
+            // WHERE name LIKE %keyword% OR description LIKE %keyword%
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + keyword.toLowerCase() + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                            "%" + keyword.toLowerCase() + "%"));
+        };
+
+        Page<Product> products = productRepository.findAll(specification, pageable);
+
+        Page<ProductDTO> productDTOs = products.map(product -> {
+            var productDTO = new ProductDTO();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setStock(product.getStock());
+
+            if (product.getCategory() != null) {
+                productDTO.setCategoryId(product.getCategory().getId());
+
+                // Convert category to categoryDTO
+                var categoryDTO = new CategoryDTO();
+                categoryDTO.setId(product.getCategory().getId());
+                categoryDTO.setName(product.getCategory().getName());
+                categoryDTO.setDescription(product.getCategory().getDescription());
+
+                // Set categoryDTO to productDTO
+                productDTO.setCategory(categoryDTO);
+            }
+
+            return productDTO;
+        });
+
+        return productDTOs;
     }
 
 }
