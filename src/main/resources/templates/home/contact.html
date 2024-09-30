@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/layout}">
 
 <head>
     <meta charset="UTF-8">
@@ -16,20 +16,24 @@
 </style>
 
 <body>
-    <section layout:fragment = "content"></section>
-    <h1>Contact</h1>
+    <section layout:fragment="content">
+        <h1>Contact</h1>
 
-    Enter your name: <input type="text" id = "input01">
-    <button onclick="greeting()">Submit</button>
+        Enter your name: <input type="text" id="input01">
+        <button onclick="greeting()">Submit</button>
 
-    <div id = "print"></div>
+        <div id="print"></div>
+        <script>
+            var greeting = function () {
+                var name = document.getElementById("input01").value;
+                document.getElementById("print").innerHTML = "Hello " + name + "!";
+            }
+        </script>
+
+    </section>
+
 </body>
 
-<script>
-    var greeting = function () {
-        var name = document.getElementById("input01").value;
-        document.getElementById("print").innerHTML = "Hello " + name + "!";
-    }
-</script>
+
 
 </html>

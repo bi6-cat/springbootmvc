@@ -1,0 +1,17 @@
+<aside th:fragment="sidebar" class="w-[250px] border-r border-slate-300 shadow-md">
+    <div class="menu-header border-b border-slate-300 text-2xl font-semibold p-3">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+    </div>
+    <ul class="menu-list">
+        <li class="menu-item">
+            <a th:href="@{/categories}" class="menu-link block p-3 hover:bg-blue-500 hover:text-white">
+                <i class="fa-solid fa-list"></i> Category Manager
+            </a>
+        </li>
+        <li class="menu-item">
+            <a th:href="@{/products}" class="menu-link block p-3 hover:bg-blue-500 hover:text-white">
+                <i class="fa-solid fa-boxes-packing"></i> Product Manager
+            </a>
+        </li>
+    </ul>
+</aside>
