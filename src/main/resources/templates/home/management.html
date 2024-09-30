@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+    layout:decorate="~{layouts/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <h1>Entity Management:</h1>
+        <div class="flex justify-center p-4">
+            <a th:href="@{/categories}" class="bg-blue-500 text-white px-4 py-2 rounded mx-2 no-underline hover:bg-blue-700">Category Management</a>
+            <a th:href="@{/products}" class="bg-blue-500 text-white px-4 py-2 rounded mx-2 no-underline hover:bg-blue-700">Product Management</a>
+        </div>
+    </section>
+</body>
+    </section>
+</body>
+
+</html>

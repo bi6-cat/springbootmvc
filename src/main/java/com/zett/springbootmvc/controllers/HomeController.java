@@ -33,4 +33,10 @@ public class HomeController {
         modelMap.addAttribute("message", "This is contact page");
         return "home/contact";
     }
+
+    @GetMapping("/management")
+    public String management(Model model) {
+        model.addAttribute("message", "Edit your entity here");
+        return "home/management";
+    }
 }
