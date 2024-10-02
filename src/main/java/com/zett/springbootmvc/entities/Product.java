@@ -16,10 +16,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     private String name;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     private String description;
 
     @Column(nullable = false)

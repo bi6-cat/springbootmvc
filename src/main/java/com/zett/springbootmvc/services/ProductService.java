@@ -12,7 +12,9 @@ import com.zett.springbootmvc.dtos.product.ProductDTO;
 public interface ProductService {
     List<ProductDTO> findAll();
 
-    List<ProductDTO> search(String keyword);
+    List<ProductDTO> findAll(String keyword);
+
+    Page<ProductDTO> findAll(String keyword, Pageable pageable);
 
     ProductDTO findById(UUID id);
 
@@ -21,6 +23,4 @@ public interface ProductService {
     ProductDTO update(UUID id, ProductDTO productDTO);
 
     void delete(UUID id);
-
-    Page<ProductDTO> search(String keyword, Pageable pageable);
 }

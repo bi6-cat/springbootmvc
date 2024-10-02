@@ -2,7 +2,6 @@ package com.zett.springbootmvc.controllers;
 
 import java.util.UUID;
 
-import org.hibernate.query.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import com.zett.springbootmvc.dtos.category.CategoryDTO;
 import com.zett.springbootmvc.services.CategoryService;
 
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 
 @Controller
 @RequestMapping("/categories")
@@ -27,13 +25,24 @@ public class CategoryController {
     @GetMapping
     public String index(
             @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "5") Integer pageSize,
+            @RequestParam(required = false, defaultValue = "5") Integer size,
             @RequestParam(required = false) String keyword,
             Model model) {
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Pageable pageable = PageRequest.of(page, size);
         var categories = categoryService.findAll(keyword, pageable);
         model.addAttribute("categories", categories);
+
         model.addAttribute("keyword", keyword);
+        //Passing totalPage to view
+        model.addAttribute("totalPages", categories.getTotalPages());
+
+        model.addAttribute("totalElements", categories.getTotalElements());
+
+        model.addAttribute("page", page);
+
+        model.addAttribute("pageSize", size);
+
+        model.addAttribute("pageSizes", new Integer[]{5, 10, 20, 50, 100});
         return "categories/index";
     }
 

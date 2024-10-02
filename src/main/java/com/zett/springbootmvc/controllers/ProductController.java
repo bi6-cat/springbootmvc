@@ -27,11 +27,21 @@ public class ProductController {
     public String index(Model model,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "pageSize", required = false, defaultValue = "5") int pageSize) {
-        var pageable = PageRequest.of(page, pageSize);
-        var products = productService.search(keyword,pageable);
+            @RequestParam(name = "size", required = false, defaultValue = "5") int size) {
+        var pageable = PageRequest.of(page, size);
+        var products = productService.findAll(keyword,pageable);
         model.addAttribute("keyword", keyword);
         model.addAttribute("products", products);
+
+        model.addAttribute("totalPages", products.getTotalPages());
+
+        model.addAttribute("totalElements", products.getTotalElements());
+
+        model.addAttribute("page", page);
+
+        model.addAttribute("pageSize", size);
+
+        model.addAttribute("pageSizes", new Integer[]{5, 10, 20, 50, 100});
         return "products/index";
     }
 

@@ -17,10 +17,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     private String name;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 1000, columnDefinition = "NVARCHAR(255)")
     private String description;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
