@@ -5,12 +5,15 @@ import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.zett.springbootmvc.dtos.product.ProductCreateDTO;
 import com.zett.springbootmvc.dtos.product.ProductDTO;
 import com.zett.springbootmvc.services.CategoryService;
 import com.zett.springbootmvc.services.ProductService;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/products")
@@ -29,8 +32,9 @@ public class ProductController {
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "5") int size) {
         var pageable = PageRequest.of(page, size);
-        var products = productService.findAll(keyword,pageable);
+        var products = productService.findAll(keyword, pageable);
         model.addAttribute("keyword", keyword);
+        
         model.addAttribute("products", products);
 
         model.addAttribute("totalPages", products.getTotalPages());
@@ -41,25 +45,39 @@ public class ProductController {
 
         model.addAttribute("pageSize", size);
 
-        model.addAttribute("pageSizes", new Integer[]{5, 10, 20, 50, 100});
+        model.addAttribute("pageSizes", new Integer[] { 5, 10, 20, 50, 100 });
         return "products/index";
     }
 
     @GetMapping("/create")
-    public String create(Model model){
+    public String create(Model model) {
+        var productCreateDTO = new ProductCreateDTO();
+        model.addAttribute("productCreateDTO", productCreateDTO);
         var categories = categoryService.findAll();
         model.addAttribute("categories", categories);
         return "products/create";
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute ProductCreateDTO productCreateDTO){
+    public String create(
+            @ModelAttribute @Valid ProductCreateDTO productCreateDTO,
+            BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            if (productCreateDTO.getCategoryId() == null) {
+                bindingResult.rejectValue("categoryId", "category", "Category is required");
+            }
+            var categories = categoryService.findAll();
+            model.addAttribute("categories", categories);
+            return "products/create";
+        }
+
         productService.create(productCreateDTO);
+
         return "redirect:/products";
     }
 
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable UUID id, Model model){
+    public String edit(@PathVariable UUID id, Model model) {
         var productDTO = productService.findById(id);
         model.addAttribute("productDTO", productDTO);
 
@@ -69,13 +87,13 @@ public class ProductController {
     }
 
     @PostMapping("/edit/{id}")
-    public String edit(@PathVariable UUID id, @ModelAttribute ProductDTO productDTO){
+    public String edit(@PathVariable UUID id, @ModelAttribute ProductDTO productDTO) {
         productService.update(id, productDTO);
         return "redirect:/products";
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable UUID id){
+    public String delete(@PathVariable UUID id) {
         productService.delete(id);
         return "redirect:/products";
     }

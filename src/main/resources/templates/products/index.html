@@ -82,7 +82,7 @@
                 <li class="page-item">
                     <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
                         th:classappend="0 == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                        th:href="@{/products(page=0, size=${pageSize})}">
+                        th:href="@{/products(keyword=${keyword}, page=0, size=${pageSize})}">
                         <i class="fa-solid fa-angle-double-left"></i>
                     </a>
                 </li>
@@ -91,13 +91,13 @@
                     <!-- Page i and size 2 -->
                     <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
                         th:classappend="${i} == ${page} ? '!bg-blue-500 text-white' : ''"
-                        th:href="@{/products(page=${i}, size=${pageSize})}" th:text="${i} + 1"></a>
+                        th:href="@{/products(keyword=${keyword}, page=${i}, size=${pageSize})}" th:text="${i} + 1"></a>
                 </li>
 
                 <li class="page-item">
                     <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
                         th:classappend="${totalPages - 1} == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                        th:href="@{/products(page=${totalPages - 1}, size=${pageSize})}">
+                        th:href="@{/products(keyword=${keyword}, page=${totalPages - 1}, size=${pageSize})}">
                         <i class="fa-solid fa-angle-double-right"></i>
                     </a>
                 </li>
