@@ -36,7 +36,10 @@
                     <thead>
                         <tr class="*:p-2 *:text-left">
                             <th class="border border-slate-300">ID</th>
-                            <th class="border border-slate-300">Name</th>
+                            <th class="border border-slate-300"><a
+                                    th:href="@{/categories(keyword=${keyword}, sortBy=${sortBy}, order=${order == 'asc' ? 'desc' : 'asc'}, page=${page}, size=${pageSize})}">Name</a><i
+                                    th:class="${sortBy == 'name' and order == 'asc' ? 'fa-solid fa-arrow-down-short-wide' : 'fa-solid  fa-arrow-up-wide-short'}"></i>
+                            </th>
                             <th class="border border-slate-300">Description</th>
                             <th class="border border-slate-300">Action</th>
                         </tr>
@@ -58,13 +61,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-footer pagination p-3 flex justify-between items-center"> 
+            <div class="card-footer pagination p-3 flex justify-between items-center">
                 <!-- Select page size -->
                 <div class="select-size">
                     <label for="pageSize" class="text-sm font-medium text-gray-700 mb-2">Page Size:</label>
                     <!-- Select size - keep keyword and reset page to page 1 -->
                     <select id="pageSize" name="pageSize" class="p-2 border border-slate-300 rounded-md"
-                        onchange="window.location.href = '/categories?keyword=' + document.getElementById('keyword').value + '&page=0&size=' + this.value">
+                        onchange="window.location.href = '/categories?keyword=' + document.getElementById('keyword').value + '&sortBy=name&order=asc&page=0&size=' + this.value">
                         <option th:each="size : ${pageSizes}" th:value="${size}" th:text="${size}"
                             th:selected="${size == pageSize}"></option>
                     </select>
@@ -74,7 +77,7 @@
                     <li class="page-item">
                         <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
                             th:classappend="0 == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                            th:href="@{/categories(page=0, size=${pageSize})}">
+                            th:href="@{/categories(keyword=${keyword}, sortBy=${sortBy}, order=${order},page=0, size=${pageSize})}">
                             <i class="fa-solid fa-angle-double-left"></i>
                         </a>
                     </li>
@@ -83,13 +86,13 @@
                         <!-- Page i and size 2 -->
                         <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
                             th:classappend="${i} == ${page} ? '!bg-blue-500 text-white' : ''"
-                            th:href="@{/categories(page=${i}, size=${pageSize})}" th:text="${i} + 1"></a>
+                            th:href="@{/categories(keyword=${keyword}, sortBy=${sortBy}, order=${order}, page=${i}, size=${pageSize})}" th:text="${i} + 1"></a>
                     </li>
 
                     <li class="page-item">
                         <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
                             th:classappend="${totalPages - 1} == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                            th:href="@{/categories(page=${totalPages - 1}, size=${pageSize})}">
+                            th:href="@{/categories(keyword=${keyword}, sortBy=${sortBy}, order=${order}, page=${totalPages - 1}, size=${pageSize})}">
                             <i class="fa-solid fa-angle-double-right"></i>
                         </a>
                     </li>
@@ -98,7 +101,8 @@
                 <div class="page-info">
                     <!-- 1-2 of 7 items -->
                     <span th:text="${page * pageSize + 1}"></span>-
-                    <span th:text="${(page + 1) * pageSize > totalElements ? totalElements : (page + 1) * pageSize}"></span>
+                    <span
+                        th:text="${(page + 1) * pageSize > totalElements ? totalElements : (page + 1) * pageSize}"></span>
                     of
                     <span th:text="${totalElements}"></span>
                     items

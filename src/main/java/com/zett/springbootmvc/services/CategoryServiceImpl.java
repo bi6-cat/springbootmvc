@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.zett.springbootmvc.dtos.category.CategoryCreateDTO;
 import com.zett.springbootmvc.dtos.category.CategoryDTO;
 import com.zett.springbootmvc.entities.Category;
 import com.zett.springbootmvc.repositories.CategoryRepository;
@@ -127,23 +128,29 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryDTO;
     }
 
+
     @Override
-    public CategoryDTO create(CategoryDTO categoryDTO) {
-        if (categoryDTO == null) {
-            throw new IllegalArgumentException("Required categoryDTO");
+    public CategoryDTO create(CategoryCreateDTO categoryCreateDTO) {
+        // Kiem tra categoryDTO null
+        if (categoryCreateDTO == null) {
+            throw new IllegalArgumentException("Category is required");
         }
 
-        var existingCategory = categoryRepository.findByName(categoryDTO.getName());
-        if (existingCategory != null) {
-            throw new IllegalArgumentException("Category already exists");
+        // Checl if category name is existed
+        var existedCategory = categoryRepository.findByName(categoryCreateDTO.getName());
+        if (existedCategory != null) {
+            throw new IllegalArgumentException("Category name is existed");
         }
 
+        // Convert CategoryDTO to Category
         var category = new Category();
-        category.setName(categoryDTO.getName());
-        category.setDescription(categoryDTO.getDescription());
+        category.setName(categoryCreateDTO.getName());
+        category.setDescription(categoryCreateDTO.getDescription());
 
+        // Save category
         category = categoryRepository.save(category);
 
+        // Convert Category to CategoryDTO
         var newCategoryDTO = new CategoryDTO();
         newCategoryDTO.setId(category.getId());
         newCategoryDTO.setName(category.getName());

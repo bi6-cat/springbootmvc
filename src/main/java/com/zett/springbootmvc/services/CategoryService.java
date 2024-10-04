@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.zett.springbootmvc.dtos.category.CategoryCreateDTO;
 import com.zett.springbootmvc.dtos.category.CategoryDTO;
 
 public interface CategoryService {
@@ -17,7 +18,7 @@ public interface CategoryService {
 
     CategoryDTO findById(UUID id);
 
-    CategoryDTO create(CategoryDTO categoryDTO);
+    CategoryDTO create(CategoryCreateDTO categoryCreateDTO);
     
     CategoryDTO update(UUID id, CategoryDTO categoryDTO);
     
