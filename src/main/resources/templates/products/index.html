@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Category Management</title>
 </head>
 
 <body>
@@ -18,8 +18,16 @@
                     <div class="form-group mb-3 w-full">
                         <label for="keyword" class="block mb-2">Keyword</label>
                         <input type="text" id="keyword" name="keyword"
-                            class="w-full p-2 border border-slate-300 rounded-md" th:value="${keyword}"
-                            placeholder="Enter the keyword">
+                            class="w-full p-2 border border-slate-300 rounded-md" th:value="${keyword}">
+                    </div>
+                    <div class="form-group mb-3 w-full">
+                        <label for="keyword" class="block mb-2">Category</label>
+                        <select name="categoryName" id="category" title="Category"
+                            class="w-full p-2 border border-slate-300 rounded-md">
+                            <option>Select Category</option>
+                            <option th:each="category : ${categories}" th:value="${category.name}"
+                                th:text="${category.name}" th:selected="${category.name == categoryName}"></option>
+                        </select>
                     </div>
                 </div>
                 <div class="card-footer p-3 flex justify-between">
@@ -33,14 +41,14 @@
 
                 <table class="table-auto w-full">
                     <thead>
-                        <tr>
-                            <th class="border border-slate-300 px-4 py-2">ID</th>
-                            <th class="border border-slate-300 px-4 py-2">Name</th>
-                            <th class="border border-slate-300 px-4 py-2">Description</th>
-                            <th class="border border-slate-300 px-4 py-2">Price</th>
-                            <th class="border border-slate-300 px-4 py-2">Stock</th>
-                            <th class="border border-slate-300 px-4 py-2">Category</th>
-                            <th class="border border-slate-300 px-4 py-2">Action</th>
+                        <tr class="*:p-2 *:text-left">
+                            <th class="border border-slate-300">ID</th>
+                            <th class="border border-slate-300">Name</th>
+                            <th class="border border-slate-300">Description</th>
+                            <th class="border border-slate-300">Price</th>
+                            <th class="border border-slate-300">Stock</th>
+                            <th class="border border-slate-300">Category</th>
+                            <th class="border border-slate-300">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,52 +72,54 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+            <div class="card-footer pagination p-3 flex justify-between items-center">
+                <!-- Select page size -->
+                <div class="select-size">
+                    <label for="pageSize" class="text-sm font-medium text-gray-700 mb-2">Page Size:</label>
+                    <!-- Select size - keep keyword and reset page to page 1 -->
+                    <select id="pageSize" name="pageSize" class="p-2 border border-slate-300 rounded-md"
+                        onchange="window.location.href = '/products?keyword=' + document.getElementById('keyword').value + '&page=0&size=' + this.value">
+                        <option th:each="size : ${pageSizes}" th:value="${size}" th:text="${size}"
+                            th:selected="${size == pageSize}"></option>
+                    </select>
+                </div>
+                <!-- Pagination -->
+                <ul class="page-menu flex justify-center items-center gap-2">
+                    <li class="page-item">
+                        <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
+                            th:classappend="0 == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
+                            th:href="@{/products(keyword=${keyword}, categoryName=${categoryName}, page=0, size=${pageSize})}">
+                            <i class="fa-solid fa-angle-double-left"></i>
+                        </a>
+                    </li>
 
-        <div class="card-footer pagination p-3 flex justify-between items-center"> 
-            <!-- Select page size -->
-            <div class="select-size">
-                <label for="pageSize" class="text-sm font-medium text-gray-700 mb-2">Page Size:</label>
-                <!-- Select size - keep keyword and reset page to page 1 -->
-                <select id="pageSize" name="pageSize" class="p-2 border border-slate-300 rounded-md"
-                    onchange="window.location.href = '/products?keyword=' + document.getElementById('keyword').value + '&page=0&size=' + this.value">
-                    <option th:each="size : ${pageSizes}" th:value="${size}" th:text="${size}"
-                        th:selected="${size == pageSize}"></option>
-                </select>
-            </div>
-            <!-- Pagination -->
-            <ul class="page-menu flex justify-center items-center gap-2">
-                <li class="page-item">
-                    <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
-                        th:classappend="0 == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                        th:href="@{/products(keyword=${keyword}, page=0, size=${pageSize})}">
-                        <i class="fa-solid fa-angle-double-left"></i>
-                    </a>
-                </li>
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(page - pageLimit < 0 ? 0 : page - pageLimit,  totalPages - 1 - page >= pageLimit ? page + pageLimit  : totalPages - 1)}">
+                        <!-- Page i and size 2 -->
+                        <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
+                            th:classappend="${i} == ${page} ? '!bg-blue-500 text-white' : ''"
+                            th:href="@{/products(keyword=${keyword}, categoryName=${categoryName}, page=${i}, size=${pageSize})}"
+                            th:text="${i} + 1"></a>
+                    </li>
 
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                    <!-- Page i and size 2 -->
-                    <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
-                        th:classappend="${i} == ${page} ? '!bg-blue-500 text-white' : ''"
-                        th:href="@{/products(keyword=${keyword}, page=${i}, size=${pageSize})}" th:text="${i} + 1"></a>
-                </li>
-
-                <li class="page-item">
-                    <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
-                        th:classappend="${totalPages - 1} == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
-                        th:href="@{/products(keyword=${keyword}, page=${totalPages - 1}, size=${pageSize})}">
-                        <i class="fa-solid fa-angle-double-right"></i>
-                    </a>
-                </li>
-            </ul>
-            <!-- Page Info -->
-            <div class="page-info">
-                <!-- 1-2 of 7 items -->
-                <span th:text="${page * pageSize + 1}"></span>-
-                <span th:text="${(page + 1) * pageSize > totalElements ? totalElements : (page + 1) * pageSize}"></span>
-                of
-                <span th:text="${totalElements}"></span>
-                items
+                    <li class="page-item">
+                        <a class="w-8 h-8 flex justify-center items-center block page-link p-2 bg-slate-300 hover:bg-blue-500 hover:text-white rounded-full cursor-pointer"
+                            th:classappend="${totalPages - 1} == ${page} ? 'pointer-events-none !bg-slate-200 text-slate-400' : ''"
+                            th:href="@{/products(keyword=${keyword}, categoryName=${categoryName}, page=${totalPages - 1}, size=${pageSize})}">
+                            <i class="fa-solid fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Page Info -->
+                <div class="page-info">
+                    <!-- 1-2 of 7 items -->
+                    <span th:text="${page * pageSize + 1}"></span>-
+                    <span
+                        th:text="${(page + 1) * pageSize > totalElements ? totalElements : (page + 1) * pageSize}"></span>
+                    of
+                    <span th:text="${totalElements}"></span>
+                    items
+                </div>
             </div>
         </div>
     </section>

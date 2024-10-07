@@ -26,7 +26,7 @@
                         <label for="name" class="block mb-2">Category</label>
                         <select name="categoryId" id="category" title="Category"
                             class="w-full p-2 border border-slate-300 rounded-md">
-                            <option value="">Select Category</option>
+                            <option value="-1">Select Category</option>
                             <option th:each="category : ${categories}" th:value="${category.id}"
                                 th:text="${category.name}"></option>
                         </select>
@@ -46,8 +46,8 @@
                         <span class="text-red-500" th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}"></span>
                     </div>
                     <div class="form-group mb-3 w-1/2 px-2">
-                        <label for="description" class="block mb-2">Description</label>
-                        <textarea id="description" name="description"
+                        <label for="editor" class="block mb-2">Description</label>
+                        <textarea id="editor" name="description"
                             class="w-full p-2 border border-slate-300 rounded-md"></textarea>
                         <span class="text-red-500" th:if="${#fields.hasErrors('description')}"
                             th:errors="*{description}"></span>
@@ -60,6 +60,60 @@
                 </form>
             </div>
         </div>
+
+        <style>
+            .ck-editor__editable {
+                min-height: 500px;
+            }
+        </style>
+
+        <script type="importmap">
+            {
+                "imports": {
+                    "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.2.0/ckeditor5.js",
+                    "ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.2.0/"
+                }
+            }
+        </script>
+        <script type="module">
+            import {
+                ClassicEditor,
+                Essentials,
+                Bold,
+                Italic,
+                Font,
+                Paragraph,
+                Table, TableToolbar,
+                Heading,
+                HeadingButtonsUI, ParagraphButtonUI,
+                SourceEditing
+            } from 'ckeditor5';
+
+            ClassicEditor
+                .create(document.querySelector('#editor'), {
+                    heading: {
+                        options: [
+                            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+                        ]
+                    },
+                    plugins: [Essentials, Bold, Italic, Font, Paragraph, Table, TableToolbar, Heading, SourceEditing],
+                    toolbar: {
+                        items: [
+                            'undo', 'redo', '|', 'bold', 'italic', '|',
+                            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'insertTable', 'heading', 'SourceEditing'
+                        ],
+                        shouldNotGroupWhenFull: true
+                    },
+                    table: {
+                        defaultHeadings: { rows: 1, columns: 1 }
+                    }
+                })
+                .then( /* ... */)
+                .catch( /* ... */);
+        </script>
     </section>
 </body>
 
