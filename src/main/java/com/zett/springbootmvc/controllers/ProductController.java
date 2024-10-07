@@ -28,24 +28,32 @@ public class ProductController {
 
     @GetMapping
     public String index(Model model,
+            @RequestParam(name = "categoryName", required = false) String categoryName,
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "5") int size) {
         var pageable = PageRequest.of(page, size);
-        var products = productService.findAll(keyword, pageable);
-        model.addAttribute("keyword", keyword);
-        
+        var products = productService.search(keyword, categoryName, pageable);
         model.addAttribute("products", products);
 
-        model.addAttribute("totalPages", products.getTotalPages());
-
-        model.addAttribute("totalElements", products.getTotalElements());
+        model.addAttribute("keyword", keyword);
 
         model.addAttribute("page", page);
 
         model.addAttribute("pageSize", size);
 
-        model.addAttribute("pageSizes", new Integer[] { 5, 10, 20, 50, 100 });
+        model.addAttribute("totalPages", products.getTotalPages());
+
+        model.addAttribute("totalElements", products.getTotalElements());
+
+        model.addAttribute("pageLimit", 2);
+        
+        model.addAttribute("pageSizes", new Integer[] { 2, 5, 10, 20, 50, 100 });
+
+        var categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
+
+        model.addAttribute("categoryName", categoryName);
         return "products/index";
     }
 

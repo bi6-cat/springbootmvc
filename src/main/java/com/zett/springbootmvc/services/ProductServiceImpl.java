@@ -281,4 +281,107 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
+    @Override
+    public Page<ProductDTO> search(String keyword, Pageable pageable) {
+        Specification<Product> specification = (root, query, criteriaBuilder) -> {
+            if (keyword == null) {
+                return null;
+            }
+
+            // WHERE name LIKE %keyword% OR description LIKE %keyword%
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + keyword.toLowerCase() + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                            "%" + keyword.toLowerCase() + "%"));
+        };
+
+        Page<Product> products = productRepository.findAll(specification, pageable);
+
+        Page<ProductDTO> productDTOs = products.map(product -> {
+            var productDTO = new ProductDTO();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setStock(product.getStock());
+
+            if (product.getCategory() != null) {
+                productDTO.setCategoryId(product.getCategory().getId());
+
+                // Convert category to categoryDTO
+                var categoryDTO = new CategoryDTO();
+                categoryDTO.setId(product.getCategory().getId());
+                categoryDTO.setName(product.getCategory().getName());
+                categoryDTO.setDescription(product.getCategory().getDescription());
+
+                // Set categoryDTO to productDTO
+                productDTO.setCategory(categoryDTO);
+            }
+
+            return productDTO;
+        });
+
+        return productDTOs;
+    }
+
+    @Override
+    public Page<ProductDTO> search(String keyword, String categoryName, Pageable pageable) {
+        Specification<Product> specification = (root, query, criteriaBuilder) -> {
+            if (keyword == null) {
+                return null;
+            }
+
+            // WHERE name LIKE %keyword%
+            Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
+                    "%" + keyword.toLowerCase() + "%");
+
+            // WHERE description LIKE %keyword%
+            Predicate descriptionPredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                    "%" + keyword.toLowerCase() + "%");
+
+            // WHERE name LIKE %keyword% OR description LIKE %keyword%
+            Predicate keywordPredicate = criteriaBuilder.or(namePredicate, descriptionPredicate);
+
+            if(categoryName == null || categoryName.isBlank()) {
+                return keywordPredicate;
+            }
+
+            // WHERE description LIKE %keyword%
+            Predicate categoryNamePredicate = criteriaBuilder.equal(
+                    criteriaBuilder.lower(root.get("category").get("name")),
+                    categoryName.toLowerCase());
+
+            // WHERE (name LIKE %keyword% OR description LIKE %keyword%) AND category.name = categoryName
+            return criteriaBuilder.and(keywordPredicate, categoryNamePredicate);
+        };
+
+        Page<Product> products = productRepository.findAll(specification, pageable);
+
+        Page<ProductDTO> productDTOs = products.map(product -> {
+            var productDTO = new ProductDTO();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setStock(product.getStock());
+
+            if (product.getCategory() != null) {
+                productDTO.setCategoryId(product.getCategory().getId());
+
+                // Convert category to categoryDTO
+                var categoryDTO = new CategoryDTO();
+                categoryDTO.setId(product.getCategory().getId());
+                categoryDTO.setName(product.getCategory().getName());
+                categoryDTO.setDescription(product.getCategory().getDescription());
+
+                // Set categoryDTO to productDTO
+                productDTO.setCategory(categoryDTO);
+            }
+
+            return productDTO;
+        });
+
+        return productDTOs;
+    }
+
 }
