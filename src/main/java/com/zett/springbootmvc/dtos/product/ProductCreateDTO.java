@@ -29,5 +29,8 @@ public class ProductCreateDTO {
     @Range(min = 0, message = "Stock must be greater than or equal to 0")
     private int stock;
 
+    @Length(max = 255, message = "Image URL must be less than 255 characters")
+    private String image;
+
     private UUID categoryId;
 }

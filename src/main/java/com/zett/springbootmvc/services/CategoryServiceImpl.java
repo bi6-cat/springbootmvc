@@ -83,7 +83,6 @@ public class CategoryServiceImpl implements CategoryService {
             if (keyword == null) {
                 return null;
             }
-
             // Neu keyword khong null
             // WHERE LOWER(name) LIKE %keyword%
             Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
